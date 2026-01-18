@@ -1,0 +1,29 @@
+name: github_vault
+description: Secure GitHub Credential Manager
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  dio: ^5.4.0
+  provider: ^6.1.1
+  flutter_secure_storage: ^9.0.0
+  encrypt: ^5.0.3
+  pointycastle: ^3.7.4
+  google_fonts: ^6.1.0
+  intl: ^0.19.0
+  flutter_spinkit: ^5.2.0 # Better loading indicators
+  local_auth: ^2.1.6 # Biometric bonus
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
