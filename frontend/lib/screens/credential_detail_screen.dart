@@ -5,6 +5,7 @@ import '../models/credential.dart';
 import '../services/api_service.dart';
 import '../services/crypto_service.dart';
 import '../services/storage_service.dart';
+import 'package:github_vault/services/api_service.dart';
 
 class CredentialDetailScreen extends StatefulWidget {
   final Credential credential;
@@ -33,7 +34,8 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
 
       if (encryptionPassword != null) {
         // 3. Decrypt locally
-        final decrypted = CryptoService.decryptSecret(encryptedBlob, encryptionPassword);
+        // The '??' provides an empty string if the value is null
+        final decrypted = CryptoService.decryptSecret(encryptedBlob ?? '', encryptionPassword);
         setState(() => _decryptedSecret = decrypted);
       }
     } finally {

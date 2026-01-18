@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../widgets/credential_card.dart';
 import 'add_credential_screen.dart';
 import 'settings_screen.dart';
+import 'package:github_vault/services/api_service.dart';
 
 class CredentialListScreen extends StatefulWidget {
   const CredentialListScreen({super.key});
@@ -27,7 +28,9 @@ class _CredentialListScreenState extends State<CredentialListScreen> {
     setState(() => _isLoading = true);
     try {
       final data = await _api.fetchCredentials('PAT'); // Default filter
-      setState(() => _credentials = data);
+      setState(() {
+        _credentials = data.map((item) => Credential.fromJson(item)).toList();
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to load: $e")),

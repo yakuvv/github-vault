@@ -1,39 +1,51 @@
-import 'package:dio/dio.dart';
-import '../models/credential.dart';
-import 'storage_service.dart';
+import 'dart:convert'; // Fixes "json" error
+import 'package:http/http.dart' as http; // Fixes "http" error
 
 class ApiService {
-  // FIXED: Pointing to your local backend terminal address
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://localhost:3000/api'));
-  final StorageService _storage = StorageService();
+  // 1. These variables MUST be here for the functions below to work
+  final String baseUrl = 'http://localhost:3000';
+  String? token;
 
-  ApiService() {
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final token = await _storage.getToken();
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
-        }
-        return handler.next(options);
-      },
-      onError: (DioException e, handler) {
-        return handler.next(e);
-      },
-    ));
+  // 2. Fetch Credentials
+  Future<List<dynamic>> fetchCredentials(String type) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/credentials?type=$type'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body)['credentials'];
+    }
+    return [];
   }
 
-  Future<List<Credential>> fetchCredentials(String type) async {
-    final response = await _dio.get('/credentials', queryParameters: {'type': type});
-    final List data = response.data['credentials'];
-    return data.map((json) => Credential.fromJson(json)).toList();
+  // 3. Delete Credential
+  Future<bool> deleteCredential(String id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/credentials/$id'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    return response.statusCode == 200 || response.statusCode == 204;
   }
 
-  Future<String> revealSecret(String id) async {
-    final response = await _dio.post('/credentials/$id/reveal');
-    return response.data['encryptedValue'];
-  }
+  // 4. Reveal Secret
+  Future<String?> revealSecret(String credentialId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/credentials/$credentialId/reveal'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
 
-  Future<void> deleteCredential(String id) async {
-    await _dio.delete('/credentials/$id');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['value'];
+      }
+      return null;
+    } catch (e) {
+      print('Reveal error: $e');
+      return null;
+    }
   }
 }

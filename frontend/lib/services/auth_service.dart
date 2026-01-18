@@ -4,7 +4,7 @@ import 'storage_service.dart';
 
 class AuthService extends ChangeNotifier {
   // These variables MUST be defined here inside the class
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:3000/api'));
+  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://localhost:3000/api'));
   final StorageService _storage = StorageService();
   bool _isAuthenticated = false;
 
